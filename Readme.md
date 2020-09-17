@@ -1,9 +1,9 @@
 # Shared Memory Practice
 
 ## Compile
-    ```
-    make
-    ```
+```
+make
+```
 
 ## Usage
 * Start the server program
