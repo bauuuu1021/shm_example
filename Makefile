@@ -8,7 +8,6 @@ target: $(FILE)
 
 %: %.c
 	$(CC) $(CFLAGS) -o $@ $@.c 
-	objdump -d -M intel $@ > origin_$@.dump
 
 clean:
-	rm -rf $(FILE) *.dump
+	rm -rf $(FILE)

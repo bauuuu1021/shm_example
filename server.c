@@ -4,33 +4,33 @@
 #include <sys/shm.h>
 #include <unistd.h>
 
-int test_func(int val) {
-	int ret = val+1;
-	return ret;
-}
-
 int *ptr;
 
 int main () {
-	int id;
+    int id;
 
-	printf("[server] pid %d\n", getpid());
+    // Create a shared memory section
+    if ((id = shmget(IPC_PRIVATE, 4096, IPC_CREAT | 0660)) < 0) {
+        perror("[server] shmget ");
+        return -1;
+    }
 
-	if ((id = shmget(IPC_PRIVATE, 4096, IPC_CREAT | 0660)) < 0) {
-		perror("[server] shmget ");
-		return -1;
-	}
-	printf("[server] shm_id %d\n", id);
-	
-	if ((ptr = (int *)shmat(id, NULL, 0)) < 0) {
-		perror("[server] shmat ");
-		return -1;
-	}
-	printf("[server] shm  %p\n", (void *)ptr);
+    printf("[server] shm_id %d\n", id);
+    printf("[server] Copy the shm_id above to the client program\n\n");
 
-	while (getchar()) {
-		printf("%d\n", ptr[0]);
-		ptr[0] = test_func(ptr[0]);
-		printf("%d\n", ptr[0]);
-	}
+    // Attach the memory section, the return value is a pointer to 
+    // the shared memory section
+    if ((ptr = (int *)shmat(id, NULL, 0)) < 0) {
+        perror("[server] shmat ");
+        return -1;
+    }
+
+    printf("[server] The original value is %d\n", ptr[0]);
+    printf("[server] Press enter to increase the value\n");
+
+    while (getchar()) {
+        printf("Before: %d\n", ptr[0]);
+        ptr[0] = ptr[0]+1;
+        printf("After : %d\n", ptr[0]);
+    }
 }
